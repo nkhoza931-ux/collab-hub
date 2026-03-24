@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Notifications – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.notifications') }}" class="active"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-bell" style="color:var(--gold)"></i> Notifications</h1>
+</div>
+<div class="card">
+  {% if notifications %}
+    {% for n in notifications %}
+    <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--gray-100);">
+      <i class="fa fa-bell" style="color:var(--gold);"></i>
+      <div style="flex:1;">
+        <div style="font-size:0.875rem;">{{ n.message }}</div>
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-top:2px;">{{ n.created_at.strftime('%d %b %Y, %H:%M') }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p style="color:var(--gray-400);">No notifications yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

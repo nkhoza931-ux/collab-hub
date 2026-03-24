@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Privacy & POPIA Notice – DUT Collaboration Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --green: #006B3F; --green-dark: #004d2c; --green-light: #e8f5ee; --gold: #F0A500; --white: #ffffff; --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-600: #4b5563; --gray-800: #1f2937; --radius: 8px; }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-100); color: var(--gray-800); }
+    .top-stripe { height: 5px; background: linear-gradient(90deg, var(--gold) 40%, var(--green-dark) 40%); }
+    .topbar { background: var(--green); color: white; padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+    .topbar-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; color: white; }
+    .logo-box { width: 34px; height: 34px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85rem; color: var(--green-dark); }
+    .topbar a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 0.875rem; }
+    .topbar a:hover { color: var(--gold); }
+    .container { max-width: 800px; margin: 40px auto; padding: 0 20px 40px; }
+    .card { background: var(--white); border-radius: var(--radius); box-shadow: 0 1px 4px rgba(0,0,0,0.08); padding: 40px; }
+    .card h1 { font-size: 1.6rem; font-weight: 700; color: var(--green-dark); margin-bottom: 6px; }
+    .card .subtitle { font-size: 0.875rem; color: var(--gray-600); margin-bottom: 28px; padding-bottom: 16px; border-bottom: 2px solid var(--gold); }
+    h2 { font-size: 1rem; font-weight: 700; color: var(--green-dark); margin: 24px 0 8px; }
+    p { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; margin-bottom: 10px; }
+    ul { margin: 8px 0 10px 20px; }
+    ul li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; margin-bottom: 4px; }
+    .highlight { background: var(--green-light); border-left: 4px solid var(--green); border-radius: var(--radius); padding: 14px 18px; margin: 20px 0; }
+    .highlight p { margin: 0; font-size: 0.875rem; color: var(--green-dark); }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; background: var(--green); color: white; border-radius: var(--radius); text-decoration: none; font-size: 0.875rem; font-weight: 600; margin-top: 24px; }
+    .back-btn:hover { background: var(--green-dark); }
+    footer { text-align: center; padding: 16px; font-size: 0.78rem; color: var(--gray-400); }
+  </style>
+</head>
+<body>
+<div class="top-stripe"></div>
+<div class="topbar">
+  <a class="topbar-brand" href="/">
+    <div class="logo-box">DUT</div> Collaboration Hub
+  </a>
+  <a href="{{ url_for('auth.login') }}">← Back to Login</a>
+</div>
+
+<div class="container">
+  <div class="card">
+    <h1>Privacy & POPIA Notice</h1>
+    <div class="subtitle">Last updated: March 2026 &mdash; DUT Collaboration Hub &mdash; Group 14</div>
+
+    <div class="highlight">
+      <p>This application is developed as an academic project by students of the Durban University of Technology (DUT). It complies with the principles of the <strong>Protection of Personal Information Act, No. 4 of 2013 (POPIA)</strong>.</p>
+    </div>
+
+    <h2>1. Who We Are</h2>
+    <p>The DUT Collaboration Hub is a web-based platform developed by Group 14 (PBDV301 & PBDE401) to facilitate faculty-student collaborative project management at DUT.</p>
+
+    <h2>2. What Personal Information We Collect</h2>
+    <p>When you register and use this platform, we may collect the following personal information:</p>
+    <ul>
+      <li>Full name</li>
+      <li>Email address (used as your login credential)</li>
+      <li>Department / faculty affiliation</li>
+      <li>Role (student or faculty)</li>
+      <li>Project applications, submissions, and messages you create within the platform</li>
+      <li>Files you upload to the platform</li>
+    </ul>
+
+    <h2>3. Why We Collect Your Information</h2>
+    <p>Your personal information is collected for the following purposes:</p>
+    <ul>
+      <li>To create and manage your account on the platform</li>
+      <li>To facilitate project collaboration between students and faculty</li>
+      <li>To send notifications related to your projects, applications, and workshops</li>
+      <li>To track academic progress and milestone submissions</li>
+    </ul>
+
+    <h2>4. How We Store and Protect Your Information</h2>
+    <ul>
+      <li>Passwords are never stored in plain text — they are securely hashed using industry-standard algorithms</li>
+      <li>Data is stored in a secure relational database</li>
+      <li>Access to your data is role-based — only authorised users can view relevant information</li>
+      <li>Session management is handled securely to prevent unauthorised access</li>
+    </ul>
+
+    <h2>5. Who Has Access to Your Information</h2>
+    <ul>
+      <li><strong>Faculty members</strong> can see applications submitted to their projects and student names/emails of enrolled students</li>
+      <li><strong>Administrators</strong> can view user accounts for platform management purposes</li>
+      <li>Your personal information is <strong>not shared</strong> with third parties outside this platform</li>
+    </ul>
+
+    <h2>6. Your Rights Under POPIA</h2>
+    <p>As a data subject, you have the right to:</p>
+    <ul>
+      <li>Know what personal information we hold about you</li>
+      <li>Request correction of inaccurate information</li>
+      <li>Request deletion of your account and associated data</li>
+      <li>Object to the processing of your personal information</li>
+    </ul>
+    <p>To exercise these rights, please contact your system administrator.</p>
+
+    <h2>7. Cookies and Sessions</h2>
+    <p>This application uses session cookies to keep you logged in. These cookies are essential for the platform to function and do not track you across other websites.</p>
+
+    <h2>8. Changes to This Notice</h2>
+    <p>This privacy notice may be updated as the platform evolves. Any significant changes will be communicated via the platform's notification system.</p>
+
+    <h2>9. Contact</h2>
+    <p>This platform is an academic project. For any privacy-related concerns, please speak to your DUT lecturer or module coordinator for PBDV301 / PBDE401.</p>
+
+    <a href="{{ url_for('auth.login') }}" class="back-btn">← Back to Login</a>
+  </div>
+</div>
+
+<footer>&copy; 2025 Durban University of Technology &mdash; Group 14</footer>
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Mark Attendance – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('faculty.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('faculty.post_project') }}"><i class="fa fa-plus-circle"></i> Post Project</a>
+<a href="{{ url_for('faculty.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('faculty.applications') }}"><i class="fa fa-inbox"></i> Applications</a>
+<a href="{{ url_for('faculty.submissions') }}"><i class="fa fa-file-alt"></i> Submissions</a>
+<a href="{{ url_for('faculty.workshops') }}" class="active"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('faculty.report') }}"><i class="fa fa-chart-bar"></i> Report</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-users" style="color:var(--gold)"></i> Mark Attendance</h1>
+    <p>{{ workshop.title }} — {{ workshop.date }} at {{ workshop.time }}</p>
+  </div>
+  <a href="{{ url_for('faculty.workshops') }}" class="btn btn-outline"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+<div class="card" style="max-width:600px;">
+  {% if registrations %}
+  <form method="POST">
+    <div class="card-title"><i class="fa fa-clipboard-list"></i> Registered Participants ({{ registrations|length }})</div>
+    {% for reg in registrations %}
+    <div style="display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100);">
+      <input type="checkbox" name="attended" value="{{ reg.user_id }}" id="user_{{ reg.user_id }}" {% if reg.attended %}checked{% endif %} style="width:18px; height:18px; accent-color:var(--green); cursor:pointer;"/>
+      <label for="user_{{ reg.user_id }}" style="flex:1; cursor:pointer; font-size:0.875rem;">
+        <strong>{{ reg.user.name }}</strong>
+        <span style="color:var(--gray-400); font-size:0.78rem; margin-left:8px;">{{ reg.user.email }}</span>
+      </label>
+      {% if reg.attended %}<span class="badge badge-green">Present</span>{% else %}<span class="badge badge-gray">Absent</span>{% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary" style="margin-top:16px;"><i class="fa fa-save"></i> Save Attendance</button>
+  </form>
+  {% else %}
+  <p style="color:var(--gray-400);">No students registered yet.</p>
+  {% endif %}
+</div>
+{% endblock %}

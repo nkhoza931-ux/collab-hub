@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Milestones – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}" class="active"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-flag" style="color:var(--gold)"></i> My Milestones</h1>
+</div>
+<div class="card">
+  {% if milestones %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Milestone</th><th>Project</th><th>Due Date</th><th>Status</th><th>Submission</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for m in milestones %}
+        <tr>
+          <td><strong>{{ m.title }}</strong></td>
+          <td>{{ m.project.title }}</td>
+          <td>{{ m.due_date }}</td>
+          <td><span class="badge badge-{% if m.status == 'completed' %}green{% elif m.status == 'in_progress' %}gold{% else %}gray{% endif %}">{{ m.status|replace('_',' ')|title }}</span></td>
+          <td>
+            {% if m.id in my_submission_ids %}
+              <span class="badge badge-green"><i class="fa fa-check"></i> Submitted</span>
+            {% else %}
+              <span class="badge badge-gray">Not submitted</span>
+            {% endif %}
+          </td>
+          <td>
+            <a href="{{ url_for('student.submit_milestone', milestone_id=m.id) }}" class="btn btn-outline btn-sm">
+              <i class="fa fa-upload"></i> {% if m.id in my_submission_ids %}Update{% else %}Submit{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:var(--gray-400);">No milestones found. Enrol in a project to see milestones.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Browse Projects – DUT Hub{% endblock %}
+
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}" class="active"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-search" style="color:var(--gold)"></i> Browse Projects</h1>
+    <p>Find and apply to open research projects</p>
+  </div>
+</div>
+
+<!-- Search & Filter -->
+<form method="GET" class="search-bar">
+  <input type="text" name="search" placeholder="&#128269; Search by title, description, skills..." value="{{ search }}"/>
+  <select name="dept">
+    {% for d in departments %}
+    <option value="{{ d }}" {% if d == dept_filter %}selected{% endif %}>{{ d }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="open" {% if status_filter == 'open' %}selected{% endif %}>Open</option>
+    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+    <option value="closed" {% if status_filter == 'closed' %}selected{% endif %}>Closed</option>
+  </select>
+  <select name="sort">
+    <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+    <option value="deadline" {% if sort_by == 'deadline' %}selected{% endif %}>By Deadline</option>
+    <option value="slots" {% if sort_by == 'slots' %}selected{% endif %}>Most Slots</option>
+  </select>
+  <button type="submit" class="btn btn-primary">Filter</button>
+  <a href="{{ url_for('student.browse') }}" class="btn btn-outline">Reset</a>
+</form>
+
+<!-- Results count -->
+<p style="font-size:0.85rem; color:var(--gray-600); margin-bottom:16px;">
+  Showing <strong>{{ projects|length }}</strong> project(s)
+  {% if search %} for "<strong>{{ search }}</strong>"{% endif %}
+</p>
+
+<!-- Project grid -->
+{% if projects %}
+<div class="project-grid">
+  {% for p in projects %}
+  <div class="project-card">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+      <span class="badge badge-{% if p.status == 'open' %}green{% elif p.status == 'active' %}gold{% else %}gray{% endif %}">{{ p.status|title }}</span>
+      <span style="font-size:0.75rem; color:var(--gray-400);">{{ p.filled_slots }}/{{ p.slots }} slots</span>
+    </div>
+    <h3>{{ p.title }}</h3>
+    <p>{{ p.description[:120] }}{% if p.description|length > 120 %}...{% endif %}</p>
+    <div class="project-meta">
+      <span class="badge badge-gray"><i class="fa fa-building"></i> {{ p.department }}</span>
+      {% for tag in p.tags %}
+      <span class="badge badge-gold">{{ tag }}</span>
+      {% endfor %}
+    </div>
+    <div style="font-size:0.78rem; color:var(--gray-600); margin-bottom:12px;">
+      <i class="fa fa-calendar"></i> Deadline: {{ p.deadline or 'N/A' }}
+    </div>
+    <div class="project-actions">
+      {% if p.id in my_enrollments %}
+        <a href="{{ url_for('student.project_detail', project_id=p.id) }}" class="btn btn-primary btn-sm"><i class="fa fa-eye"></i> View</a>
+        <span class="badge badge-green" style="padding:5px 12px;">Enrolled</span>
+      {% elif p.id in my_apps %}
+        <span class="badge badge-gold" style="padding:5px 12px;"><i class="fa fa-clock"></i> Applied</span>
+      {% elif p.status == 'open' and p.filled_slots < p.slots %}
+        <a href="{{ url_for('student.apply', project_id=p.id) }}" class="btn btn-primary btn-sm"><i class="fa fa-paper-plane"></i> Apply</a>
+      {% else %}
+        <span class="badge badge-gray" style="padding:5px 12px;">Full / Closed</span>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="card" style="text-align:center; padding:40px;">
+  <i class="fa fa-search" style="font-size:2rem; color:var(--gray-200);"></i>
+  <p style="margin-top:12px; color:var(--gray-600);">No projects found. Try adjusting your filters.</p>
+</div>
+{% endif %}
+{% endblock %}

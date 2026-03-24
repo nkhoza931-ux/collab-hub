@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Manage Projects – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('admin.users') }}"><i class="fa fa-users"></i> Manage Users</a>
+<a href="{{ url_for('admin.projects') }}" class="active"><i class="fa fa-folder"></i> Manage Projects</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-folder-open" style="color:var(--gold)"></i> Manage Projects</h1>
+</div>
+
+<form method="GET" class="search-bar">
+  <input type="text" name="search" placeholder="Search projects..." value="{{ search }}"/>
+  <select name="dept">
+    {% for d in departments %}
+    <option value="{{ d }}" {% if d == dept_filter %}selected{% endif %}>{{ d }}</option>
+    {% endfor %}
+  </select>
+  <select name="status">
+    <option value="all" {% if status_filter=='all' %}selected{% endif %}>All Statuses</option>
+    <option value="open" {% if status_filter=='open' %}selected{% endif %}>Open</option>
+    <option value="active" {% if status_filter=='active' %}selected{% endif %}>Active</option>
+    <option value="closed" {% if status_filter=='closed' %}selected{% endif %}>Closed</option>
+  </select>
+  <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+  <a href="{{ url_for('admin.projects') }}" class="btn btn-outline btn-sm">Reset</a>
+</form>
+
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Department</th><th>Faculty</th><th>Slots</th><th>Status</th><th>Deadline</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for p in projects %}
+        <tr>
+          <td><strong>{{ p.title }}</strong></td>
+          <td>{{ p.department }}</td>
+          <td>{{ p.faculty.name }}</td>
+          <td>{{ p.filled_slots }}/{{ p.slots }}</td>
+          <td><span class="badge badge-{% if p.status=='open' %}green{% else %}gray{% endif %}">{{ p.status|title }}</span></td>
+          <td>{{ p.deadline or '—' }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin.delete_project', project_id=p.id) }}" onsubmit="return confirm('Delete this project?')">
+              <button type="submit" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i> Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

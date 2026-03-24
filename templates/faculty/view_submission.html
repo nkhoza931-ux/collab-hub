@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Review Submission – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('faculty.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('faculty.post_project') }}"><i class="fa fa-plus-circle"></i> Post Project</a>
+<a href="{{ url_for('faculty.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('faculty.applications') }}"><i class="fa fa-inbox"></i> Applications</a>
+<a href="{{ url_for('faculty.submissions') }}" class="active"><i class="fa fa-file-alt"></i> Submissions</a>
+<a href="{{ url_for('faculty.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('faculty.report') }}"><i class="fa fa-chart-bar"></i> Report</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-eye" style="color:var(--gold)"></i> Review Submission</h1>
+    <p>{{ sub.student.name }} — {{ sub.milestone.title }}</p>
+  </div>
+  <a href="{{ url_for('faculty.submissions') }}" class="btn btn-outline"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+  <!-- Submission details -->
+  <div class="card">
+    <div class="card-title"><i class="fa fa-file-alt"></i> Submission Details</div>
+    <div style="font-size:0.875rem; color:var(--gray-600); display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+      <div><strong>Student:</strong> {{ sub.student.name }} ({{ sub.student.email }})</div>
+      <div><strong>Milestone:</strong> {{ sub.milestone.title }}</div>
+      <div><strong>Project:</strong> {{ sub.milestone.project.title }}</div>
+      <div><strong>Submitted:</strong> {{ sub.submitted_at.strftime('%d %b %Y, %H:%M') }}</div>
+      <div><strong>Status:</strong> <span class="badge badge-{% if sub.status == 'reviewed' %}green{% else %}gold{% endif %}">{{ sub.status|title }}</span></div>
+    </div>
+
+    {% if sub.notes %}
+    <div style="background:var(--gray-50); border-radius:var(--radius); padding:12px; margin-bottom:16px; border-left:3px solid var(--gold);">
+      <div style="font-size:0.83rem; font-weight:600; color:var(--gray-800); margin-bottom:4px;">Student Notes:</div>
+      <div style="font-size:0.83rem; color:var(--gray-600);">{{ sub.notes }}</div>
+    </div>
+    {% endif %}
+
+    <a href="{{ url_for('faculty.download_submission', submission_id=sub.id) }}" class="btn btn-primary">
+      <i class="fa fa-download"></i> Download Submitted File ({{ sub.filename }})
+    </a>
+  </div>
+
+  <!-- Feedback form -->
+  <div class="card">
+    <div class="card-title"><i class="fa fa-comment-alt"></i> {% if sub.feedback %}Update Feedback{% else %}Give Feedback{% endif %}</div>
+
+    {% if sub.feedback %}
+    <div style="background:var(--green-light); border-radius:var(--radius); padding:12px; margin-bottom:16px; border-left:4px solid var(--green);">
+      <div style="font-size:0.83rem; font-weight:600; color:var(--green-dark);">Current Feedback</div>
+      <div style="font-size:0.83rem; margin-top:4px;">{{ sub.feedback.comment }}</div>
+      {% if sub.feedback.grade %}<div style="margin-top:6px;"><span class="badge badge-gold">Grade: {{ sub.feedback.grade }}</span></div>{% endif %}
+      <div style="font-size:0.75rem; color:var(--gray-400); margin-top:6px;">Given on {{ sub.feedback.created_at.strftime('%d %b %Y') }}</div>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('faculty.give_feedback', submission_id=sub.id) }}">
+      <div class="form-group">
+        <label>Feedback Comment <span style="color:var(--gray-400); font-weight:400;">(required)</span></label>
+        <textarea name="comment" rows="5" placeholder="Write your feedback on the student's submission..." required>{{ sub.feedback.comment if sub.feedback else '' }}</textarea>
+      </div>
+      <div class="form-group">
+        <label>Grade <span style="color:var(--gray-400); font-weight:400;">(optional, e.g. A, B+, 85%)</span></label>
+        <input type="text" name="grade" placeholder="e.g. A, 85%, Satisfactory" value="{{ sub.feedback.grade if sub.feedback else '' }}" style="max-width:200px;"/>
+      </div>
+      <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i> Submit Feedback</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

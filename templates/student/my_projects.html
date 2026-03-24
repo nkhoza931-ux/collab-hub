@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}My Projects – DUT Hub{% endblock %}
+
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}" class="active"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-folder-open" style="color:var(--gold)"></i> My Projects</h1>
+</div>
+
+<!-- Enrolled -->
+<div class="card">
+  <div class="card-title"><i class="fa fa-check-circle"></i> Enrolled Projects</div>
+  {% if enrollments %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Project</th><th>Department</th><th>Enrolled On</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for e in enrollments %}
+        <tr>
+          <td><strong>{{ e.project.title }}</strong></td>
+          <td>{{ e.project.department }}</td>
+          <td>{{ e.enrolled_at.strftime('%d %b %Y') }}</td>
+          <td><a href="{{ url_for('student.project_detail', project_id=e.project_id) }}" class="btn btn-outline btn-sm"><i class="fa fa-eye"></i> View</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:var(--gray-400); font-size:0.875rem;">You are not enrolled in any projects yet.</p>
+  {% endif %}
+</div>
+
+<!-- Applications -->
+<div class="card">
+  <div class="card-title"><i class="fa fa-clock"></i> My Applications</div>
+  {% if applications %}
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Project</th><th>Applied On</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for a in applications %}
+        <tr>
+          <td><strong>{{ a.project.title }}</strong></td>
+          <td>{{ a.created_at.strftime('%d %b %Y') }}</td>
+          <td>
+            <span class="badge badge-{% if a.status == 'approved' %}green{% elif a.status == 'rejected' %}red{% else %}gold{% endif %}">
+              {{ a.status|title }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p style="color:var(--gray-400); font-size:0.875rem;">No applications yet. <a href="{{ url_for('student.browse') }}" style="color:var(--green);">Browse projects</a> to apply.</p>
+  {% endif %}
+</div>
+{% endblock %}

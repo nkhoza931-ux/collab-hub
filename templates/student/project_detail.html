@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ project.title }} – DUT Hub{% endblock %}
+
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}" class="active"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-project-diagram" style="color:var(--gold)"></i> {{ project.title }}</h1>
+    <p>{{ project.department }}</p>
+  </div>
+  <a href="{{ url_for('student.my_projects') }}" class="btn btn-outline"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+
+<div style="display:grid; grid-template-columns:2fr 1fr; gap:20px;">
+
+  <div>
+    <!-- Project info -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-info-circle"></i> About This Project</div>
+      <p style="font-size:0.875rem; color:var(--gray-600); margin-bottom:14px;">{{ project.description }}</p>
+      <div style="font-size:0.85rem; color:var(--gray-600); display:flex; flex-direction:column; gap:6px;">
+        <div><i class="fa fa-tools" style="color:var(--green); width:18px;"></i> {{ project.requirements }}</div>
+        <div><i class="fa fa-calendar" style="color:var(--green); width:18px;"></i> Deadline: {{ project.deadline }}</div>
+        <div><i class="fa fa-flag-checkered" style="color:var(--green); width:18px;"></i> End Date: {{ project.end_date }}</div>
+      </div>
+    </div>
+
+    <!-- Chat -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-comments"></i> Project Chat</div>
+      <div class="chat-box" id="chat-box">
+        {% if messages %}
+          {% for m in messages %}
+          <div class="chat-msg {% if m.sender_id == current_user.id %}mine{% endif %}">
+            <span class="msg-sender">{{ m.sender.name }}</span>
+            <span class="msg-time">{{ m.sent_at.strftime('%d %b, %H:%M') }}</span>
+            <div class="msg-body">{{ m.body }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <p style="color:var(--gray-400); font-size:0.85rem; text-align:center; padding:20px 0;">No messages yet. Start the conversation!</p>
+        {% endif %}
+      </div>
+      <form method="POST" action="{{ url_for('student.send_message', project_id=project.id) }}" class="chat-input">
+        <input type="text" name="body" placeholder="Type a message..." required autocomplete="off"/>
+        <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane"></i></button>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <!-- Milestones -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-flag"></i> Milestones</div>
+      {% if milestones %}
+        {% for m in milestones %}
+        <div class="milestone-item">
+          <div class="milestone-dot dot-{{ m.status }}"></div>
+          <div style="flex:1;">
+            <div style="font-size:0.85rem; font-weight:600;">{{ m.title }}</div>
+            <div style="font-size:0.75rem; color:var(--gray-400);">{{ m.due_date }}</div>
+          </div>
+          <span class="badge badge-{% if m.status == 'completed' %}green{% elif m.status == 'in_progress' %}gold{% else %}gray{% endif %}">{{ m.status|replace('_',' ')|title }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--gray-400); font-size:0.85rem;">No milestones yet.</p>
+      {% endif %}
+    </div>
+
+    <!-- Files -->
+    <div class="card">
+      <div class="card-title"><i class="fa fa-paperclip"></i> Project Files</div>
+      {% if files %}
+        {% for f in files %}
+        <div class="file-item">
+          <div class="file-item-name">
+            <i class="fa fa-file"></i>
+            <span>{{ f.filename }}</span>
+          </div>
+          <a href="{{ url_for('student.download_file', file_id=f.id) }}" class="btn btn-outline btn-sm"><i class="fa fa-download"></i></a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--gray-400); font-size:0.85rem;">No files uploaded yet.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Auto-scroll chat to bottom
+  const cb = document.getElementById('chat-box');
+  if (cb) cb.scrollTop = cb.scrollHeight;
+</script>
+{% endblock %}

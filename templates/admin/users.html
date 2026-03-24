@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Manage Users – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('admin.users') }}" class="active"><i class="fa fa-users"></i> Manage Users</a>
+<a href="{{ url_for('admin.projects') }}"><i class="fa fa-folder"></i> Manage Projects</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-users" style="color:var(--gold)"></i> Manage Users</h1>
+</div>
+<div style="display:flex; gap:8px; margin-bottom:20px;">
+  <a href="{{ url_for('admin.users') }}" class="btn {% if role_filter=='all' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">All</a>
+  <a href="{{ url_for('admin.users', role='student') }}" class="btn {% if role_filter=='student' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Students</a>
+  <a href="{{ url_for('admin.users', role='faculty') }}" class="btn {% if role_filter=='faculty' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Faculty</a>
+  <a href="{{ url_for('admin.users', role='admin') }}" class="btn {% if role_filter=='admin' %}btn-primary{% else %}btn-outline{% endif %} btn-sm">Admins</a>
+</div>
+<div class="card">
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Department</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.name }}</strong></td>
+          <td>{{ u.email }}</td>
+          <td><span class="badge badge-{% if u.role=='admin' %}red{% elif u.role=='faculty' %}gold{% else %}green{% endif %}">{{ u.role|title }}</span></td>
+          <td>{{ u.department or '—' }}</td>
+          <td><span class="badge badge-{% if u.is_active_account %}green{% else %}red{% endif %}">{% if u.is_active_account %}Active{% else %}Suspended{% endif %}</span></td>
+          <td>
+            <a href="{{ url_for('admin.toggle_user', user_id=u.id) }}" class="btn btn-sm {% if u.is_active_account %}btn-danger{% else %}btn-primary{% endif %}">
+              {% if u.is_active_account %}<i class="fa fa-ban"></i> Suspend{% else %}<i class="fa fa-check"></i> Activate{% endif %}
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}System Report – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('admin.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('admin.users') }}"><i class="fa fa-users"></i> Manage Users</a>
+<a href="{{ url_for('admin.projects') }}"><i class="fa fa-folder"></i> Manage Projects</a>
+<a href="{{ url_for('admin.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('admin.report') }}" class="active"><i class="fa fa-chart-bar"></i> System Report</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-chart-bar" style="color:var(--gold)"></i> System-Wide Report</h1>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">{{ projects|length }}</div><div class="stat-label">Total Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ closed_projects|length }}</div><div class="stat-label">Completed Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_submissions }}</div><div class="stat-label">Total Submissions</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_workshops }}</div><div class="stat-label">Total Workshops</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_registrations }}</div><div class="stat-label">Workshop Registrations</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_attended }}</div><div class="stat-label">Attendances Recorded</div></div>
+</div>
+
+<!-- Department Breakdown -->
+<div class="card">
+  <div class="card-title"><i class="fa fa-building"></i> Department Breakdown</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Department</th><th>Projects</th><th>Completed</th><th>Students</th></tr></thead>
+      <tbody>
+        {% for d in dept_stats %}
+        <tr>
+          <td><strong>{{ d.name }}</strong></td>
+          <td>{{ d.projects }}</td>
+          <td><span class="badge badge-{% if d.closed > 0 %}green{% else %}gray{% endif %}">{{ d.closed }}</span></td>
+          <td>{{ d.students }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Completed Projects with Outcomes -->
+{% if closed_projects %}
+<div class="card">
+  <div class="card-title"><i class="fa fa-flag-checkered"></i> Completed Projects & Outcomes</div>
+  {% for p in closed_projects %}
+  <div style="padding:14px 0; border-bottom:1px solid var(--gray-100);">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+      <div>
+        <div style="font-weight:600; color:var(--green-dark);">{{ p.title }}</div>
+        <div style="font-size:0.78rem; color:var(--gray-400);">{{ p.department }} &nbsp;|&nbsp; Faculty: {{ p.faculty.name }} &nbsp;|&nbsp; {{ p.filled_slots }} students</div>
+      </div>
+      <span class="badge badge-gray">Closed</span>
+    </div>
+    {% if p.final_outcome %}
+    <div style="background:var(--green-light); border-radius:var(--radius); padding:10px; border-left:4px solid var(--green); font-size:0.83rem; color:var(--gray-600);">
+      <strong style="color:var(--green-dark);">Outcome:</strong> {{ p.final_outcome }}
+    </div>
+    {% else %}
+    <div style="font-size:0.83rem; color:var(--gray-400);">No outcome recorded.</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

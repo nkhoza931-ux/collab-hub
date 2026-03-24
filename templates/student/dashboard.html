@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}" class="active"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('student.report') }}"><i class="fa fa-chart-bar"></i> My Report</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-home" style="color:var(--gold)"></i> My Dashboard</h1>
+    <p>Welcome back, {{ current_user.name }}!</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">{{ projects|length }}</div><div class="stat-label">Enrolled Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ pending_applications }}</div><div class="stat-label">Pending Applications</div></div>
+  <div class="stat-card"><div class="stat-num">{{ upcoming_count }}</div><div class="stat-label">Upcoming Milestones</div></div>
+  <div class="stat-card"><div class="stat-num">{{ notifications|length }}</div><div class="stat-label">Unread Notifications</div></div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+  <div class="card">
+    <div class="card-title"><i class="fa fa-folder-open"></i> Enrolled Projects</div>
+    {% if projects %}
+      {% for p in projects %}
+      <div style="padding:10px 0; border-bottom:1px solid var(--gray-100);">
+        <div style="font-weight:600; color:var(--green-dark);">{{ p.title }}</div>
+        <div style="font-size:0.78rem; color:var(--gray-600); margin-bottom:4px;">{{ p.department }}</div>
+        <div style="background:var(--gray-100); border-radius:20px; height:6px; margin-bottom:6px;">
+          <div style="background:var(--green); height:6px; border-radius:20px; width:{{ p.completion_percentage }}%;"></div>
+        </div>
+        <div style="font-size:0.75rem; color:var(--gray-400);">{{ p.completion_percentage }}% complete</div>
+        <a href="{{ url_for('student.project_detail', project_id=p.id) }}" class="btn btn-outline btn-sm" style="margin-top:6px;">View</a>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--gray-400); font-size:0.875rem;">Not enrolled yet. <a href="{{ url_for('student.browse') }}" style="color:var(--green);">Browse projects</a></p>
+    {% endif %}
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-title"><i class="fa fa-flag"></i> Upcoming Milestones</div>
+      {% if milestones %}
+        {% for m in milestones %}
+        <div class="milestone-item">
+          <div class="milestone-dot dot-{{ m.status }}"></div>
+          <div style="flex:1;">
+            <div style="font-size:0.875rem; font-weight:600;">{{ m.title }}</div>
+            <div style="font-size:0.78rem; color:var(--gray-600);">Due: {{ m.due_date }}</div>
+          </div>
+          <span class="badge badge-{% if m.status == 'completed' %}green{% elif m.status == 'in_progress' %}gold{% else %}gray{% endif %}">{{ m.status|replace('_',' ')|title }}</span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--gray-400); font-size:0.875rem;">No milestones yet.</p>
+      {% endif %}
+    </div>
+
+    <div class="card">
+      <div class="card-title"><i class="fa fa-calendar-alt"></i> Upcoming Workshops</div>
+      {% if upcoming_workshops %}
+        {% for w in upcoming_workshops %}
+        <div style="padding:10px 0; border-bottom:1px solid var(--gray-100);">
+          <div style="font-weight:600; font-size:0.875rem; color:var(--green-dark);">{{ w.title }}</div>
+          <div style="font-size:0.78rem; color:var(--gray-600);">
+            <i class="fa fa-calendar"></i> {{ w.date }} at {{ w.time }}
+            &nbsp;|&nbsp;
+            {% if w.is_online %}<i class="fa fa-video"></i> Online{% else %}<i class="fa fa-map-marker-alt"></i> {{ w.location }}{% endif %}
+          </div>
+          {% if w.id in my_workshop_ids %}
+            <span class="badge badge-green" style="margin-top:4px; display:inline-block;"><i class="fa fa-check"></i> Registered</span>
+          {% else %}
+            <a href="{{ url_for('student.workshops') }}" class="btn btn-outline btn-sm" style="margin-top:4px;">Register</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      {% else %}
+        <p style="color:var(--gray-400); font-size:0.875rem;">No upcoming workshops.</p>
+      {% endif %}
+      <a href="{{ url_for('student.workshops') }}" class="btn btn-outline btn-sm" style="margin-top:12px;">View All</a>
+    </div>
+  </div>
+
+  <div class="card" style="grid-column: 1 / -1;">
+    <div class="card-title"><i class="fa fa-bell"></i> Recent Notifications</div>
+    {% if notifications %}
+      {% for n in notifications %}
+      <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--gray-100);">
+        <i class="fa fa-circle" style="color:var(--gold); font-size:0.5rem;"></i>
+        <span style="font-size:0.875rem;">{{ n.message }}</span>
+        <span style="margin-left:auto; font-size:0.75rem; color:var(--gray-400);">{{ n.created_at.strftime('%d %b') }}</span>
+      </div>
+      {% endfor %}
+    {% else %}
+      <p style="color:var(--gray-400); font-size:0.875rem;">No new notifications.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

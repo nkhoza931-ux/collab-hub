@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('admin.dashboard') }}" class="active"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('admin.users') }}"><i class="fa fa-users"></i> Manage Users</a>
+<a href="{{ url_for('admin.projects') }}"><i class="fa fa-folder"></i> Manage Projects</a>
+<a href="{{ url_for('admin.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('admin.report') }}"><i class="fa fa-chart-bar"></i> System Report</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-shield-alt" style="color:var(--gold)"></i> Admin Dashboard</h1>
+    <p>System overview</p>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">{{ total_users }}</div><div class="stat-label">Total Users</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_students }}</div><div class="stat-label">Students</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_faculty }}</div><div class="stat-label">Faculty</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_projects }}</div><div class="stat-label">Total Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ active_projects }}</div><div class="stat-label">Open Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ closed_projects }}</div><div class="stat-label">Completed Projects</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_apps }}</div><div class="stat-label">Applications</div></div>
+  <div class="stat-card"><div class="stat-num">{{ total_workshops }}</div><div class="stat-label">Workshops</div></div>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+  <div class="card">
+    <div class="card-title"><i class="fa fa-users"></i> Recent Users</div>
+    {% for u in recent_users %}
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--gray-100);">
+      <div>
+        <div style="font-weight:600; font-size:0.875rem;">{{ u.name }}</div>
+        <div style="font-size:0.75rem; color:var(--gray-400);">{{ u.email }}</div>
+      </div>
+      <span class="badge badge-{% if u.role == 'admin' %}red{% elif u.role == 'faculty' %}gold{% else %}green{% endif %}">{{ u.role|title }}</span>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('admin.users') }}" class="btn btn-outline btn-sm" style="margin-top:12px;">View All Users</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa fa-folder-open"></i> Recent Projects</div>
+    {% for p in recent_projects %}
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--gray-100);">
+      <div>
+        <div style="font-weight:600; font-size:0.875rem;">{{ p.title }}</div>
+        <div style="font-size:0.75rem; color:var(--gray-400);">{{ p.department }} — {{ p.faculty.name }}</div>
+      </div>
+      <span class="badge badge-{% if p.status == 'open' %}green{% elif p.status == 'closed' %}gray{% else %}gold{% endif %}">{{ p.status }}</span>
+    </div>
+    {% endfor %}
+    <a href="{{ url_for('admin.projects') }}" class="btn btn-outline btn-sm" style="margin-top:12px;">View All Projects</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Workshops – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.workshops') }}" class="active"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('student.report') }}"><i class="fa fa-chart-bar"></i> My Report</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-calendar-alt" style="color:var(--gold)"></i> Workshops</h1>
+</div>
+
+<!-- Upcoming -->
+<div class="card">
+  <div class="card-title"><i class="fa fa-clock"></i> Upcoming Workshops</div>
+  {% if upcoming %}
+    <div class="project-grid">
+      {% for w in upcoming %}
+      <div style="background:var(--white); border:1px solid var(--gray-200); border-top:3px solid var(--green); border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span class="badge badge-{% if w.is_online %}gold{% else %}green{% endif %}">{% if w.is_online %}<i class="fa fa-video"></i> Online{% else %}<i class="fa fa-building"></i> In-Person{% endif %}</span>
+          <span style="font-size:0.75rem; color:var(--gray-400);">{{ w.participant_count }}/{{ w.max_participants }} registered</span>
+        </div>
+        <h3 style="font-size:1rem; font-weight:700; color:var(--green-dark); margin-bottom:6px;">{{ w.title }}</h3>
+        {% if w.description %}<p style="font-size:0.83rem; color:var(--gray-600); margin-bottom:10px;">{{ w.description[:100] }}{% if w.description|length > 100 %}...{% endif %}</p>{% endif %}
+        <div style="font-size:0.8rem; color:var(--gray-600); display:flex; flex-direction:column; gap:4px; margin-bottom:12px;">
+          <div><i class="fa fa-calendar" style="color:var(--green); width:16px;"></i> {{ w.date }} at {{ w.time }}</div>
+          <div><i class="fa fa-hourglass-half" style="color:var(--green); width:16px;"></i> {{ w.duration_mins }} minutes</div>
+          {% if w.is_online and w.meeting_link %}
+          <div><i class="fa fa-link" style="color:var(--green); width:16px;"></i> <a href="{{ w.meeting_link }}" target="_blank" style="color:var(--green);">Join Link</a></div>
+          {% elif w.location %}
+          <div><i class="fa fa-map-marker-alt" style="color:var(--green); width:16px;"></i> {{ w.location }}</div>
+          {% endif %}
+          {% if w.project %}<div><i class="fa fa-folder" style="color:var(--green); width:16px;"></i> {{ w.project.title }}</div>{% endif %}
+          <div><i class="fa fa-user" style="color:var(--green); width:16px;"></i> {{ w.organiser.name }}</div>
+        </div>
+        {% if w.id in my_reg_ids %}
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="badge badge-green"><i class="fa fa-check"></i> Registered</span>
+            <form method="POST" action="{{ url_for('student.unregister_workshop', workshop_id=w.id) }}">
+              <button type="submit" class="btn btn-outline btn-sm">Cancel</button>
+            </form>
+          </div>
+        {% elif w.participant_count >= w.max_participants %}
+          <span class="badge badge-red">Fully Booked</span>
+        {% else %}
+          <form method="POST" action="{{ url_for('student.register_workshop', workshop_id=w.id) }}">
+            <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-check-circle"></i> Register</button>
+          </form>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="color:var(--gray-400);">No upcoming workshops at the moment.</p>
+  {% endif %}
+</div>
+
+<!-- Past -->
+{% if past %}
+<div class="card">
+  <div class="card-title"><i class="fa fa-history"></i> Past Workshops</div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Title</th><th>Date</th><th>Organiser</th><th>Type</th><th>Attended</th></tr></thead>
+      <tbody>
+        {% for w in past %}
+        {% set reg = w.registrations|selectattr('user_id', 'equalto', current_user.id)|first %}
+        <tr>
+          <td><strong>{{ w.title }}</strong></td>
+          <td>{{ w.date }}</td>
+          <td>{{ w.organiser.name }}</td>
+          <td><span class="badge badge-{% if w.is_online %}gold{% else %}gray{% endif %}">{% if w.is_online %}Online{% else %}In-Person{% endif %}</span></td>
+          <td>
+            {% if reg %}
+              <span class="badge badge-{% if reg.attended %}green{% else %}gray{% endif %}">{% if reg.attended %}Yes{% else %}Not marked{% endif %}</span>
+            {% else %}
+              <span class="badge badge-gray">Not registered</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

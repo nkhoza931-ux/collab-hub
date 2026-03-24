@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Report – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('student.report') }}" class="active"><i class="fa fa-chart-bar"></i> My Report</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <h1><i class="fa fa-chart-bar" style="color:var(--gold)"></i> My Progress Report</h1>
+  <p>{{ current_user.name }} &mdash; {{ current_user.department }}</p>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">{{ projects|length }}</div><div class="stat-label">Projects Enrolled</div></div>
+  <div class="stat-card"><div class="stat-num">{{ submissions|length }}</div><div class="stat-label">Submissions Made</div></div>
+  <div class="stat-card"><div class="stat-num">{{ workshops_attended|length }}</div><div class="stat-label">Workshops Attended</div></div>
+  <div class="stat-card">
+    <div class="stat-num">{% if submissions %}{{ submissions|selectattr('status', 'equalto', 'reviewed')|list|length }}{% else %}0{% endif %}</div>
+    <div class="stat-label">Submissions Reviewed</div>
+  </div>
+</div>
+
+<!-- Per Project breakdown -->
+{% for p in projects %}
+<div class="card">
+  <div class="card-title"><i class="fa fa-folder-open"></i> {{ p.title }}</div>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+    <div>
+      <div style="font-size:0.83rem; color:var(--gray-600); margin-bottom:8px;">Overall Progress</div>
+      <div style="background:var(--gray-100); border-radius:20px; height:10px; margin-bottom:4px;">
+        <div style="background:var(--green); height:10px; border-radius:20px; width:{{ p.completion_percentage }}%;"></div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--gray-600);">{{ p.completion_percentage }}% milestones completed</div>
+      {% if p.status == 'closed' and p.final_outcome %}
+      <div style="margin-top:12px; padding:10px; background:var(--green-light); border-radius:var(--radius); border-left:4px solid var(--green);">
+        <div style="font-size:0.83rem; font-weight:600; color:var(--green-dark);">Final Outcome</div>
+        <div style="font-size:0.83rem; color:var(--gray-600); margin-top:4px;">{{ p.final_outcome }}</div>
+      </div>
+      {% endif %}
+    </div>
+    <div>
+      <div style="font-size:0.83rem; color:var(--gray-600); margin-bottom:8px;">Milestones & Submissions</div>
+      {% for m in p.milestones %}
+      {% set my_sub = submissions|selectattr('milestone_id', 'equalto', m.id)|first %}
+      <div style="display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--gray-100); font-size:0.83rem;">
+        <div class="milestone-dot dot-{{ m.status }}" style="width:10px; height:10px;"></div>
+        <span style="flex:1;">{{ m.title }}</span>
+        {% if my_sub %}
+          <span class="badge badge-{% if my_sub.status == 'reviewed' %}green{% else %}gold{% endif %}">
+            {% if my_sub.status == 'reviewed' %}Reviewed{% else %}Submitted{% endif %}
+          </span>
+          {% if my_sub.feedback and my_sub.feedback.grade %}
+          <span class="badge badge-gold">{{ my_sub.feedback.grade }}</span>
+          {% endif %}
+        {% else %}
+          <span class="badge badge-gray">No submission</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+{% if not projects %}
+<div class="card" style="text-align:center; padding:40px;">
+  <i class="fa fa-chart-bar" style="font-size:2rem; color:var(--gray-200);"></i>
+  <p style="margin-top:12px; color:var(--gray-600);">No data yet. Enrol in a project to start building your report.</p>
+</div>
+{% endif %}
+{% endblock %}

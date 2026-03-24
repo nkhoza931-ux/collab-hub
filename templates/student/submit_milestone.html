@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Submit Milestone – DUT Hub{% endblock %}
+{% block sidebar %}
+<a href="{{ url_for('student.dashboard') }}"><i class="fa fa-home"></i> Dashboard</a>
+<a href="{{ url_for('student.browse') }}"><i class="fa fa-search"></i> Browse Projects</a>
+<a href="{{ url_for('student.my_projects') }}"><i class="fa fa-folder"></i> My Projects</a>
+<a href="{{ url_for('student.milestones') }}" class="active"><i class="fa fa-flag"></i> Milestones</a>
+<a href="{{ url_for('student.workshops') }}"><i class="fa fa-calendar-alt"></i> Workshops</a>
+<a href="{{ url_for('student.notifications') }}"><i class="fa fa-bell"></i> Notifications</a>
+{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1><i class="fa fa-upload" style="color:var(--gold)"></i> Submit Milestone Proof</h1>
+    <p>Upload your progress document for: <strong>{{ milestone.title }}</strong></p>
+  </div>
+  <a href="{{ url_for('student.milestones') }}" class="btn btn-outline"><i class="fa fa-arrow-left"></i> Back</a>
+</div>
+
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+  <div class="card">
+    <div class="card-title"><i class="fa fa-flag"></i> Milestone Details</div>
+    <p style="font-size:0.875rem; font-weight:600; color:var(--green-dark);">{{ milestone.title }}</p>
+    <p style="font-size:0.83rem; color:var(--gray-600); margin-top:4px;">Project: {{ milestone.project.title }}</p>
+    <p style="font-size:0.83rem; color:var(--gray-600);">Due: {{ milestone.due_date }}</p>
+    <span class="badge badge-{% if milestone.status == 'completed' %}green{% elif milestone.status == 'in_progress' %}gold{% else %}gray{% endif %}" style="margin-top:8px; display:inline-block;">
+      {{ milestone.status|replace('_',' ')|title }}
+    </span>
+
+    {% if existing %}
+    <div style="margin-top:16px; padding:12px; background:var(--green-light); border-radius:var(--radius); border-left:4px solid var(--green);">
+      <div style="font-size:0.83rem; font-weight:600; color:var(--green-dark);">Previous Submission</div>
+      <div style="font-size:0.8rem; color:var(--gray-600); margin-top:4px;"><i class="fa fa-file"></i> {{ existing.filename }}</div>
+      <div style="font-size:0.78rem; color:var(--gray-400);">Submitted: {{ existing.submitted_at.strftime('%d %b %Y') }}</div>
+      {% if existing.feedback %}
+      <div style="margin-top:10px; padding:8px; background:var(--white); border-radius:var(--radius);">
+        <div style="font-size:0.8rem; font-weight:600; color:var(--green);">Faculty Feedback:</div>
+        <div style="font-size:0.83rem; margin-top:4px;">{{ existing.feedback.comment }}</div>
+        {% if existing.feedback.grade %}
+        <div style="margin-top:4px;"><span class="badge badge-gold">Grade: {{ existing.feedback.grade }}</span></div>
+        {% endif %}
+      </div>
+      {% else %}
+      <div style="font-size:0.78rem; color:var(--gray-400); margin-top:6px;"><i class="fa fa-clock"></i> Awaiting feedback</div>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <div class="card-title"><i class="fa fa-upload"></i> {% if existing %}Replace Submission{% else %}Upload Proof{% endif %}</div>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Document File <span style="color:var(--gray-400); font-weight:400;">(PDF, Word, etc.)</span></label>
+        <input type="file" name="file" required style="padding:8px; border:1px solid var(--gray-200); border-radius:var(--radius); width:100%;"/>
+        <div style="font-size:0.75rem; color:var(--gray-400); margin-top:4px;">Allowed: PDF, DOC, DOCX, PPT, PPTX, TXT, ZIP. Max 16MB.</div>
+      </div>
+      <div class="form-group">
+        <label>Notes <span style="color:var(--gray-400); font-weight:400;">(optional)</span></label>
+        <textarea name="notes" rows="4" placeholder="Briefly describe what you completed and what the document contains...">{{ existing.notes if existing else '' }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;"><i class="fa fa-upload"></i> {% if existing %}Update Submission{% else %}Submit Proof{% endif %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

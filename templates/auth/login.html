@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login – DUT Collaboration Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --green: #006B3F; --green-dark: #004d2c; --green-light: #e8f5ee;
+      --gold: #F0A500; --white: #ffffff; --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb; --gray-600: #4b5563; --gray-800: #1f2937; --radius: 8px;
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--gray-100); min-height: 100vh; display: flex; flex-direction: column; }
+    .top-stripe { height: 5px; background: linear-gradient(90deg, var(--gold) 40%, var(--green-dark) 40%); }
+    .auth-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+    .auth-card { background: var(--white); border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.1); width: 100%; max-width: 420px; overflow: hidden; }
+    .auth-header { background: var(--green); color: var(--white); padding: 28px 32px; text-align: center; }
+    .auth-header .logo-box { width: 48px; height: 48px; background: var(--gold); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; color: var(--green-dark); margin: 0 auto 12px; }
+    .auth-header h1 { font-size: 1.3rem; font-weight: 700; }
+    .auth-header p { font-size: 0.85rem; opacity: 0.85; margin-top: 4px; }
+    .auth-body { padding: 28px 32px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gray-800); margin-bottom: 6px; }
+    .form-group input { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.875rem; font-family: inherit; color: var(--gray-800); transition: border-color 0.15s; }
+    .form-group input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,107,63,0.1); }
+    .form-group input.input-error { border-color: #dc2626 !important; box-shadow: 0 0 0 3px rgba(220,38,38,0.1) !important; }
+    .field-error { color: #dc2626; font-size: 0.78rem; margin-top: 4px; display: none; }
+    .field-error.visible { display: block; }
+    .btn-block { display: block; width: 100%; padding: 11px; background: var(--green); color: var(--white); border: none; border-radius: var(--radius); font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.15s; }
+    .btn-block:hover { background: var(--green-dark); }
+    .auth-footer { text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--gray-600); }
+    .auth-footer a { color: var(--green); font-weight: 600; text-decoration: none; }
+    .alert { padding: 10px 14px; border-radius: var(--radius); font-size: 0.85rem; margin-bottom: 14px; border-left: 4px solid; }
+    .alert-danger  { background: #fee2e2; color: #991b1b; border-color: #dc2626; }
+    .alert-success { background: var(--green-light); color: var(--green-dark); border-color: var(--green); }
+    .alert-warning { background: #fff8e6; color: #92610a; border-color: var(--gold); }
+    .alert-info    { background: #eff6ff; color: #1e40af; border-color: #3b82f6; }
+    footer { text-align: center; padding: 14px; font-size: 0.78rem; color: var(--gray-600); }
+    footer a { color: var(--green); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="top-stripe"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="logo-box">DUT</div>
+      <h1>Collaboration Hub</h1>
+      <p>Sign in to your account</p>
+    </div>
+    <div class="auth-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="POST" id="loginForm" novalidate>
+        <div class="form-group">
+          <label for="email"><i class="fa fa-envelope" style="color:#006B3F"></i> Email Address</label>
+          <input type="email" id="email" name="email" placeholder="yourname@dut.ac.za" required autocomplete="email"/>
+          <div class="field-error" id="email-error"></div>
+        </div>
+        <div class="form-group">
+          <label for="password"><i class="fa fa-lock" style="color:#006B3F"></i> Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required/>
+          <div class="field-error" id="password-error"></div>
+        </div>
+        <button type="submit" class="btn-block">Sign In</button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>&copy; 2025 Durban University of Technology &mdash; Group 14 &mdash; <a href="{{ url_for('auth.privacy') }}">Privacy & POPIA Notice</a></footer>
+
+<script>
+function validateEmail(email) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email); }
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.classList.add('visible'); }
+}
+function clearErr(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('visible');
+}
+
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  let valid = true;
+  const email = document.getElementById('email');
+  const password = document.getElementById('password');
+
+  clearErr('email-error'); clearErr('password-error');
+  email.classList.remove('input-error'); password.classList.remove('input-error');
+
+  if (!email.value.trim()) {
+    showErr('email-error', 'Email address is required.');
+    email.classList.add('input-error'); valid = false;
+  } else if (!validateEmail(email.value.trim())) {
+    showErr('email-error', 'Please enter a valid email address.');
+    email.classList.add('input-error'); valid = false;
+  }
+
+  if (!password.value.trim()) {
+    showErr('password-error', 'Password is required.');
+    password.classList.add('input-error'); valid = false;
+  }
+
+  if (!valid) e.preventDefault();
+});
+</script>
+</body>
+</html>
