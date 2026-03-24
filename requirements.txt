@@ -4,3 +4,4 @@ flask-login
 flask-mail
 werkzeug
 pytest
+gunicorn
