@@ -247,3 +247,14 @@ class WorkshopRegistration(db.Model):
 
     def __repr__(self):
         return f'<WorkshopRegistration user={self.user_id} workshop={self.workshop_id}>'
+   
+
+
+   
+
+
+
+
+
+
+ 
